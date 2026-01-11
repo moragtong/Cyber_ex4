@@ -1,0 +1,23 @@
+#!/usr/bin/python3
+
+import os
+import sys, cgi
+
+print("Content-Type: text/html")
+print("Cache-Control: public, max-age=3600")
+
+start_of_page = """<!DOCTYPE html> <html>
+                    <head>
+                    </head>
+                    <body>
+                        Hello"""
+end_of_page = """ </body> </html>"""
+script_size = len(start_of_page)+len(end_of_page)
+print(f"Content-Length: {script_size}")
+
+form = cgi.FieldStorage()
+selected_course = form.getvalue("course_id")
+# print(f"Location: http://localhost:4242/{selected_course}\n\n")
+print(f"Demo: {selected_course}\r\n\r\n", end='')
+
+print(start_of_page + end_of_page, end='')
