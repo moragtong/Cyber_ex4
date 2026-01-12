@@ -180,7 +180,6 @@ void empty_recv(const int sockfd) {
     memset(buf, 0, sizeof(buf));
 
     _recv(sockfd, buf, sizeof(buf));
-    puts(buf);
 }
 
 int32_t main() {
