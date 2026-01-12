@@ -203,7 +203,7 @@ int32_t main() {
         "%s",
         payload_len, payload);
 
-    _send(sockfd, mal_req, sizeof(mal_req) - 1);
+    _send(sockfd, mal_req, strlen(mal_req));
 
 
     empty_recv(sockfd);
