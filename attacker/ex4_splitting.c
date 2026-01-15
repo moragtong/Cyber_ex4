@@ -12,6 +12,8 @@
 
 #define PROXY_ADDR 192, 168, 1, 202
 
+#define __MY_DEBUG__
+
 union address {
     uint8_t fields[4];
     uint32_t l;
