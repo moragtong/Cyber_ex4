@@ -1,0 +1,7 @@
+192.168.1.202 - Proxy Server
+192.168.1.201 - Web Server
+192.168.1.203 - Attacker
+192.168.1.204 - Legit client
+
+/cgi-bin/course_selector
+/67607.html

